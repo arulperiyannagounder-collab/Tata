@@ -1,0 +1,13 @@
+SHIELD AI Performance Report
+========================================
+
+Dataset: 158 samples
+Features: 35
+Classes: ['INSPECTION', 'NORMAL', 'WATCH']
+
+Accuracy: 0.9051
+
+Avg inference: 0.051 ms
+Estimated ESP32: ~1.0 ms
+
+Model size: 5.4 KB

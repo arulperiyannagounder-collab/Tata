@@ -1,0 +1,6 @@
+{
+  "name": "SHIELD — EV Chassis Structural Health Monitoring 3D Simulator",
+  "description": "Real-time interactive 3D digital hardware simulation and digital twin for EV chassis structural health monitoring with ESP32-C3, HX711 strain sensors, MPU6050 IMU, DS18B20, L298N vibration feedback, active buzzer, and traffic status LEDs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

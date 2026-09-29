@@ -1,0 +1,27 @@
+{
+    "model_name": "chassis_model.pkl",
+    "model_class": "RandomForestClassifier",
+    "features": [
+        "weight_kg",
+        "stress_mpa",
+        "accel_x",
+        "accel_y",
+        "accel_z",
+        "g_force",
+        "gyro_x",
+        "gyro_y",
+        "gyro_z",
+        "temp_chassis"
+    ],
+    "classes": {
+        "0": "Safe",
+        "1": "Warning",
+        "2": "Critical"
+    },
+    "test_accuracy": 1.0,
+    "macro_f1": 1.0,
+    "avg_latency_ms": 12.3855,
+    "trained_samples": 4800,
+    "test_samples": 1200,
+    "timestamp": "2026-09-27 18:12:17"
+}

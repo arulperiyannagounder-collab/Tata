@@ -1,0 +1,26 @@
+[
+  {
+    "name": "S1: Normal",
+    "expected": "NORMAL",
+    "predicted": "NORMAL",
+    "match": true
+  },
+  {
+    "name": "S2: Minor Impact",
+    "expected": "WATCH",
+    "predicted": "WATCH",
+    "match": true
+  },
+  {
+    "name": "S3: Severe Impact",
+    "expected": "INSPECTION",
+    "predicted": "INSPECTION",
+    "match": true
+  },
+  {
+    "name": "S4: Gradual Degradation",
+    "expected": "WATCH",
+    "predicted": "WATCH",
+    "match": true
+  }
+]
