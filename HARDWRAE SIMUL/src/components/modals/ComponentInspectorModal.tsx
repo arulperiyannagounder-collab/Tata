@@ -1,6 +1,7 @@
 import React from 'react';
 import { HardwareComponentMeta, SensorTelemetry } from '../../types/simulation';
 import { useTheme } from '../../context/ThemeContext';
+import { X } from 'lucide-react';
 
 interface ComponentInspectorModalProps {
   component: HardwareComponentMeta | null;
@@ -269,7 +270,7 @@ export const ComponentInspectorModal: React.FC<ComponentInspectorModalProps> = (
               isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            ✕
+            <X className="w-4 h-4" />
           </button>
         </div>
 

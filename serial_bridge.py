@@ -110,6 +110,12 @@ async def serial_reader_loop(port_name, baud_rate):
             await asyncio.sleep(2)
 
 async def main():
+    if hasattr(sys.stdout, 'reconfigure'):
+        try:
+            sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
+
     parser = argparse.ArgumentParser(description="SHIELD Hardware Bi-Directional Bridge Server")
     parser.add_argument("--port", default="COM5", help="Serial port (default: COM5)")
     parser.add_argument("--baud", type=int, default=115200, help="Baud rate (default: 115200)")
@@ -118,21 +124,21 @@ async def main():
 
     available_ports = find_available_ports()
     print("=" * 65)
-    print("🛡️  SHIELD Real-Time Bi-Directional Hardware Bridge Server")
+    print("[*] SHIELD Real-Time Bi-Directional Hardware Bridge Server")
     print("=" * 65)
-    print(f"  • Target Serial Port : {args.port}")
-    print(f"  • Baud Rate          : {args.baud}")
-    print(f"  • WebSocket Server   : ws://localhost:{args.ws_port}")
-    print(f"  • Available COM Ports: {available_ports}")
+    print(f"  * Target Serial Port : {args.port}")
+    print(f"  * Baud Rate          : {args.baud}")
+    print(f"  * WebSocket Server   : ws://localhost:{args.ws_port}")
+    print(f"  * Available COM Ports: {available_ports}")
     print("=" * 65)
 
     if args.port not in available_ports:
-        print(f"[\033[93mWARNING\033[0m] {args.port} is not in current ports list: {available_ports}")
+        print(f"[!] WARNING: {args.port} is not in current ports list: {available_ports}")
 
     # Start WebSocket Server
     ws_server = await websockets.serve(ws_handler, "0.0.0.0", args.ws_port)
-    print(f"[\033[92m✓\033[0m] WebSocket server listening on ws://localhost:{args.ws_port}")
-    print(f"[\033[96m*\033[0m] Open the Web 3D Simulation at http://localhost:3000 to interact live!\n")
+    print(f"[+] WebSocket server listening on ws://localhost:{args.ws_port}")
+    print(f"[*] Open the Web 3D Simulation at http://localhost:3000 to interact live!\n")
 
     # Start Serial Reader task
     await serial_reader_loop(args.port, args.baud)

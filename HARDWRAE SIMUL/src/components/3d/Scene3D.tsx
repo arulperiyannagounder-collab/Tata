@@ -31,6 +31,27 @@ import {
 } from './modelGenerators';
 import { buzzerAudio } from '../../services/BuzzerAudioEngine';
 import { useTheme } from '../../context/ThemeContext';
+import {
+  Settings,
+  ChevronRight,
+  ChevronLeft,
+  Compass,
+  Move,
+  RotateCcw,
+  Camera,
+  Grid,
+  ZoomIn,
+  Box,
+  Maximize2,
+  Minimize2,
+  Layers,
+  Zap,
+  Activity,
+  Sparkles,
+  Lock,
+  Check,
+  X,
+} from 'lucide-react';
 
 interface Scene3DProps {
   telemetry: SensorTelemetry;
@@ -1178,7 +1199,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
   };
 
   return (
-    <div className={`relative w-full h-full select-none overflow-hidden ${isDark ? 'bg-[#0a0e17]' : 'bg-[#edf2f7]'}`}>
+    <div className={`relative w-full h-full select-none overflow-hidden ${isDark ? 'bg-[#0a0e13]' : 'bg-[#edf2f7]'}`}>
       {/* 3D Canvas Container */}
       <div
         ref={containerRef}
@@ -1201,7 +1222,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
             ? 'bg-slate-900/95 border-cyan-500/70 text-slate-300'
             : 'bg-white/95 border-cyan-400 text-slate-700 shadow-slate-300/60'
         }`}>
-          <span className="text-lg text-cyan-400">🔒</span>
+          <Lock className="w-4 h-4 text-cyan-400" />
           <div className="flex items-center gap-1.5">
             <span className={`font-bold font-['Chakra_Petch'] ${isDark ? 'text-white' : 'text-slate-900'}`}>{lockedToast.componentName}</span>
             <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>is LOCKED on mechanical axis.</span>
@@ -1220,9 +1241,9 @@ export const Scene3D: React.FC<Scene3DProps> = ({
           )}
           <button
             onClick={() => setLockedToast(null)}
-            className={`ml-1 text-xs cursor-pointer ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`}
+            className={`ml-1 p-0.5 rounded cursor-pointer ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`}
           >
-            ✕
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
       )}
@@ -1232,20 +1253,16 @@ export const Scene3D: React.FC<Scene3DProps> = ({
         <button
           onClick={handleToggleSlideBar}
           title="Open Bench Controls Slide Bar"
-          className={`absolute top-4 left-4 z-20 flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl shadow-2xl backdrop-blur-md font-mono text-xs transition-all cursor-pointer group active:scale-95 pointer-events-auto border ${
+          className={`absolute top-4 left-4 z-20 flex items-center gap-2 h-8 px-3 rounded-md shadow-lg backdrop-blur-md font-mono text-xs transition-all cursor-pointer group active:scale-95 pointer-events-auto border ${
             isDark
-              ? 'bg-gradient-to-r from-blue-900/90 to-slate-900/95 hover:from-blue-800 hover:to-slate-800 border-blue-500/50 hover:border-cyan-400 shadow-blue-950/60 text-white'
-              : 'bg-white hover:bg-slate-50 border-blue-400 shadow-slate-300 text-slate-800'
+              ? 'bg-slate-900/90 hover:bg-slate-800 border-slate-700/80 text-white'
+              : 'bg-white hover:bg-slate-50 border-slate-300 text-slate-800 shadow-md'
           }`}
         >
           <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-          <span className="text-sm group-hover:rotate-45 transition-transform duration-300">⚙️</span>
-          <span className={`font-bold tracking-wider ${isDark ? 'text-cyan-200' : 'text-blue-700'}`}>BENCH CONTROLS</span>
-          <span className={`px-1.5 py-0.5 text-[10px] rounded font-bold border ${
-            isDark
-              ? 'bg-blue-950/90 border-blue-500/50 text-cyan-300'
-              : 'bg-blue-50 border-blue-200 text-blue-700'
-          }`}>▶</span>
+          <Settings className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-45 transition-transform duration-300" />
+          <span className={`font-semibold tracking-wider text-[11px] uppercase ${isDark ? 'text-cyan-200' : 'text-blue-700'}`}>BENCH CONTROLS</span>
+          <ChevronRight className="w-3 h-3 text-cyan-400" />
         </button>
       )}
 
@@ -1265,13 +1282,13 @@ export const Scene3D: React.FC<Scene3DProps> = ({
         <button
           onClick={handleToggleSlideBar}
           title="Slide bar away (collapse)"
-          className={`absolute -right-8 top-5 z-40 flex items-center justify-center py-2.5 px-2 rounded-r-xl border-y border-r shadow-2xl cursor-pointer ${
+          className={`absolute -right-8 top-5 z-40 flex items-center justify-center py-2 px-1.5 rounded-r-md border-y border-r shadow-xl cursor-pointer ${
             isDark
               ? 'bg-[#0b101e]/95 border-slate-700/80 text-slate-300 hover:text-white hover:bg-slate-800'
               : 'bg-white border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-100 shadow-md'
           }`}
         >
-          <span className="text-xs font-bold leading-none">◀</span>
+          <ChevronLeft className="w-3.5 h-3.5" />
         </button>
 
         {/* Slide Bar Header */}
@@ -1279,8 +1296,8 @@ export const Scene3D: React.FC<Scene3DProps> = ({
           isDark ? 'bg-slate-900/95 border-slate-800' : 'bg-slate-50 border-slate-200'
         }`}>
           <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-600/20 border border-blue-500/40 text-blue-400 text-sm font-bold shadow-sm">
-              ⚙️
+            <div className="flex items-center justify-center w-7 h-7 rounded-md bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 shadow-xs">
+              <Settings className="w-3.5 h-3.5" />
             </div>
             <div>
               <h3 className={`text-xs font-bold tracking-wider uppercase font-mono ${
@@ -1294,13 +1311,14 @@ export const Scene3D: React.FC<Scene3DProps> = ({
           <button
             onClick={handleToggleSlideBar}
             title="Slide Bar Away (Collapse)"
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono rounded-lg transition-colors cursor-pointer shadow-xs border ${
+            className={`h-7 flex items-center gap-1 px-2.5 text-[11px] font-mono rounded-md transition-colors cursor-pointer shadow-xs border ${
               isDark
                 ? 'text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700 border-slate-700/70'
                 : 'text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border-slate-300'
             }`}
           >
-            <span>◀ Slide Bar</span>
+            <ChevronLeft className="w-3 h-3" />
+            <span>Collapse</span>
           </button>
         </div>
 
@@ -1309,10 +1327,11 @@ export const Scene3D: React.FC<Scene3DProps> = ({
           {/* Section 1: Interaction Mode */}
           <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-900/80 border-slate-800/90 shadow-sm' : 'bg-slate-50 border-slate-200 shadow-xs'}`}>
             <div className="flex items-center justify-between mb-2">
-              <span className={`text-[11px] font-mono uppercase font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                <span>🕹️</span> Interaction Mode
+              <span className={`text-[11px] font-mono uppercase tracking-wider font-semibold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                <Move className="w-3.5 h-3.5 text-slate-400" />
+                <span>Interaction Mode</span>
               </span>
-              <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${
+              <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded border ${
                 interactionMode === 'ORBIT'
                   ? isDark
                     ? 'bg-blue-950/90 border-blue-500/50 text-blue-300'
@@ -1321,7 +1340,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
                   ? 'bg-cyan-950/90 border-cyan-500/50 text-cyan-300'
                   : 'bg-cyan-50 border-cyan-300 text-cyan-700'
               }`}>
-                {interactionMode === 'ORBIT' ? '● Orbit View' : '● Move Parts'}
+                {interactionMode === 'ORBIT' ? 'Orbit View' : 'Move Parts'}
               </span>
             </div>
 
@@ -1329,7 +1348,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
             <div className={`grid grid-cols-2 gap-1.5 p-1 rounded-lg border ${isDark ? 'bg-slate-950/90 border-slate-800' : 'bg-slate-200/60 border-slate-300'}`}>
               <button
                 onClick={() => setInteractionMode('ORBIT')}
-                className={`flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                className={`h-8 flex items-center justify-center gap-1.5 px-2 text-xs font-medium rounded-md transition-all cursor-pointer ${
                   interactionMode === 'ORBIT'
                     ? 'bg-blue-600 text-white shadow-md shadow-blue-950 font-bold'
                     : isDark
@@ -1337,11 +1356,12 @@ export const Scene3D: React.FC<Scene3DProps> = ({
                     : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
                 }`}
               >
-                <span>🔄 Orbit Camera</span>
+                <Compass className="w-3.5 h-3.5" />
+                <span>Orbit Camera</span>
               </button>
               <button
                 onClick={() => setInteractionMode('MOVE')}
-                className={`flex items-center justify-center gap-1.5 py-2 px-2 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                className={`h-8 flex items-center justify-center gap-1.5 px-2 text-xs font-medium rounded-md transition-all cursor-pointer ${
                   interactionMode === 'MOVE'
                     ? 'bg-cyan-600 text-white shadow-md shadow-cyan-950 font-bold'
                     : isDark
@@ -1349,28 +1369,31 @@ export const Scene3D: React.FC<Scene3DProps> = ({
                     : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
                 }`}
               >
-                <span>🖐 Drag &amp; Move</span>
+                <Move className="w-3.5 h-3.5" />
+                <span>Drag &amp; Move</span>
               </button>
             </div>
 
             <button
               onClick={handleResetPositions}
               title="Reset all components and wires to reference positions"
-              className={`w-full mt-2 py-1.5 px-3 flex items-center justify-center gap-1.5 text-[11px] font-medium rounded-lg transition-all cursor-pointer border ${
+              className={`w-full mt-2 h-7.5 px-3 flex items-center justify-center gap-1.5 text-[11px] font-medium rounded-md transition-all cursor-pointer border ${
                 isDark
                   ? 'text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-800 border-slate-700/60 hover:border-slate-600'
                   : 'text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 border-slate-300 shadow-xs'
               }`}
             >
-              <span>↺ Reset Layout to Reference</span>
+              <RotateCcw className="w-3 h-3" />
+              <span>Reset Layout to Reference</span>
             </button>
           </div>
 
           {/* Section 2: Camera Angles Presets */}
           <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-900/80 border-slate-800/90 shadow-sm' : 'bg-slate-50 border-slate-200 shadow-xs'}`}>
             <div className="flex items-center justify-between mb-2">
-              <span className={`text-[11px] font-mono uppercase font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                <span>🎥</span> Camera Angles
+              <span className={`text-[11px] font-mono uppercase tracking-wider font-semibold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                <Camera className="w-3.5 h-3.5 text-slate-400" />
+                <span>Camera Angles</span>
               </span>
               <span className={`text-[10px] font-mono ${isDark ? 'text-cyan-400' : 'text-cyan-700 font-bold'}`}>
                 Preset: {activeCamPreset}
@@ -1379,29 +1402,31 @@ export const Scene3D: React.FC<Scene3DProps> = ({
 
             <div className="grid grid-cols-2 gap-1.5">
               {[
-                { id: 'PERSPECTIVE', label: 'Perspective', icon: '🌐', desc: 'Default 3D' },
-                { id: 'TOP', label: 'Top View', icon: '📐', desc: 'Overhead 2D' },
-                { id: 'MACRO', label: 'Close-up', icon: '🔍', desc: 'Breadboard' },
-                { id: 'LOAD_CELLS', label: '4x Load Cells', icon: '⚖️', desc: 'Chassis Quad' },
+                { id: 'PERSPECTIVE', label: 'Perspective', icon: Compass, desc: 'Default 3D' },
+                { id: 'TOP', label: 'Top View', icon: Grid, desc: 'Overhead 2D' },
+                { id: 'MACRO', label: 'Close-up', icon: ZoomIn, desc: 'Breadboard' },
+                { id: 'LOAD_CELLS', label: '4x Load Cells', icon: Box, desc: 'Chassis Quad' },
               ].map((preset) => {
                 const isActive = activeCamPreset === preset.id;
+                const IconComponent = preset.icon;
                 return (
                   <button
                     key={preset.id}
                     onClick={() => setCameraPreset(preset.id as any)}
-                    className={`flex flex-col items-start p-2 rounded-lg border text-left transition-all cursor-pointer ${
+                    className={`flex flex-col items-start p-2 rounded-md border text-left transition-all cursor-pointer ${
                       isActive
                         ? isDark
                           ? 'bg-blue-950/80 border-blue-500 text-white shadow-sm ring-1 ring-blue-500/50'
-                          : 'bg-blue-100 border-blue-600 text-blue-950 shadow-xs ring-1 ring-blue-500/50 font-bold'
+                          : 'bg-blue-50 border-blue-500 text-blue-950 shadow-xs ring-1 ring-blue-500/50 font-bold'
                         : isDark
-                        ? 'bg-slate-950/60 border-slate-800/80 text-slate-400 hover:text-slate-200 hover:border-slate-700 hover:bg-slate-900/60'
+                        ? 'bg-slate-950/60 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700 hover:bg-slate-900/60'
                         : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300 hover:bg-slate-100/70 shadow-xs'
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className="text-xs font-semibold flex items-center gap-1">
-                        <span>{preset.icon}</span> {preset.label}
+                      <span className="text-xs font-semibold flex items-center gap-1.5">
+                        <IconComponent className="w-3.5 h-3.5" />
+                        <span>{preset.label}</span>
                       </span>
                       {isActive && <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />}
                     </div>
@@ -1415,14 +1440,14 @@ export const Scene3D: React.FC<Scene3DProps> = ({
               <button
                 onClick={onToggleFullScreen}
                 title={isFullScreen ? 'Exit Full Screen 3D View' : 'Enter Immersive Full Screen 3D View'}
-                className={`w-full mt-2.5 py-2 px-3 flex items-center justify-center gap-2 text-xs font-semibold rounded-lg transition-all cursor-pointer shadow-sm active:scale-95 border ${
+                className={`w-full mt-2.5 h-8 px-3 flex items-center justify-center gap-2 text-xs font-semibold rounded-md transition-all cursor-pointer shadow-sm active:scale-95 border ${
                   isDark
                     ? 'text-blue-300 hover:text-white bg-blue-950/70 hover:bg-blue-900/80 border-blue-500/50 hover:border-blue-400'
                     : 'text-blue-800 hover:text-blue-950 bg-blue-50 hover:bg-blue-100 border-blue-300 hover:border-blue-400'
                 }`}
               >
-                <span className="text-sm">{isFullScreen ? '🗗' : '⛶'}</span>
-                <span>{isFullScreen ? 'Exit Full Screen Mode' : 'Enter 3D Full Screen Mode'}</span>
+                {isFullScreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+                <span>{isFullScreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
               </button>
             )}
           </div>
@@ -1430,8 +1455,9 @@ export const Scene3D: React.FC<Scene3DProps> = ({
           {/* Section 3: Wire Harness Routing Engine */}
           <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-900/80 border-slate-800/90 shadow-sm' : 'bg-slate-50 border-slate-200 shadow-xs'}`}>
             <div className="flex items-center justify-between mb-2">
-              <span className={`text-[11px] font-mono uppercase font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                <span>⚡</span> Wire Harness Routing
+              <span className={`text-[11px] font-mono uppercase tracking-wider font-semibold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                <Layers className="w-3.5 h-3.5 text-slate-400" />
+                <span>Wire Harness Routing</span>
               </span>
               <span className={`text-[10px] font-mono font-semibold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>
                 Manhattan 90°
@@ -1441,7 +1467,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
             <div className="space-y-1.5">
               <button
                 onClick={() => onToggleRoutingMode ? onToggleRoutingMode('ALIGNED_ORTHOGONAL') : updateAttachedWires('ALIGNED_ORTHOGONAL')}
-                className={`w-full flex items-center justify-between p-2 rounded-lg border text-left transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between p-2 rounded-md border text-left transition-all cursor-pointer ${
                   routingMode === 'ALIGNED_ORTHOGONAL'
                     ? isDark
                       ? 'bg-emerald-950/70 border-emerald-500/80 text-emerald-300 shadow-sm ring-1 ring-emerald-500/40'
@@ -1452,7 +1478,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-base">📐</span>
+                  <Grid className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                   <div>
                     <div className="text-xs font-bold leading-tight">Aligned Orthogonal</div>
                     <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Radiused Manhattan harness (Clean)</div>
@@ -1469,7 +1495,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
 
               <button
                 onClick={() => onToggleRoutingMode ? onToggleRoutingMode('VALIDATED_TIGHT') : updateAttachedWires('VALIDATED_TIGHT')}
-                className={`w-full flex items-center justify-between p-2 rounded-lg border text-left transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between p-2 rounded-md border text-left transition-all cursor-pointer ${
                   routingMode === 'VALIDATED_TIGHT'
                     ? isDark
                       ? 'bg-cyan-950/70 border-cyan-500/80 text-cyan-300 shadow-sm ring-1 ring-cyan-500/40'
@@ -1480,7 +1506,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-base">⚡</span>
+                  <Zap className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                   <div>
                     <div className="text-xs font-bold leading-tight">Tight Direct</div>
                     <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Taut point-to-point Bézier cables</div>
@@ -1497,7 +1523,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
 
               <button
                 onClick={() => onToggleRoutingMode ? onToggleRoutingMode('STANDARD_SLACK') : updateAttachedWires('STANDARD_SLACK')}
-                className={`w-full flex items-center justify-between p-2 rounded-lg border text-left transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between p-2 rounded-md border text-left transition-all cursor-pointer ${
                   routingMode === 'STANDARD_SLACK'
                     ? isDark
                       ? 'bg-indigo-950/70 border-indigo-500/80 text-indigo-300 shadow-sm ring-1 ring-indigo-500/40'
@@ -1508,7 +1534,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-base">〰</span>
+                  <Activity className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
                   <div>
                     <div className="text-xs font-bold leading-tight">Lab Sag</div>
                     <div className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Realistic physical catenary gravity sag</div>
@@ -1531,13 +1557,13 @@ export const Scene3D: React.FC<Scene3DProps> = ({
                 updateAttachedWires('ALIGNED_ORTHOGONAL');
               }}
               title="Snap all components to reference positions and align all wire channels"
-              className={`w-full mt-2.5 py-2 px-3 flex items-center justify-center gap-2 text-xs font-bold rounded-lg transition-all cursor-pointer shadow-md border ${
+              className={`w-full mt-2.5 h-8 px-3 flex items-center justify-center gap-2 text-xs font-semibold rounded-md transition-all cursor-pointer shadow-md border ${
                 isDark
-                  ? 'text-amber-200 bg-gradient-to-r from-amber-950/90 to-amber-900/80 hover:from-amber-900 hover:to-amber-800/90 border-amber-500/60'
-                  : 'text-amber-900 bg-gradient-to-r from-amber-100 to-amber-200 hover:from-amber-200 hover:to-amber-300 border-amber-400 shadow-xs'
+                  ? 'text-amber-200 bg-amber-950/80 hover:bg-amber-900/90 border-amber-500/50'
+                  : 'text-amber-900 bg-amber-100 hover:bg-amber-200 border-amber-400 shadow-xs'
               }`}
             >
-              <span>✨</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span>Align Wiring Design &amp; Snap</span>
             </button>
           </div>
@@ -1546,15 +1572,16 @@ export const Scene3D: React.FC<Scene3DProps> = ({
           {onOpenLockManager && (
             <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-900/80 border-slate-800/90 shadow-sm' : 'bg-slate-50 border-slate-200 shadow-xs'}`}>
               <div className="flex items-center justify-between mb-1.5">
-                <span className={`text-[11px] font-mono uppercase font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                  <span>🔒</span> Mechanical Rigidity
+                <span className={`text-[11px] font-mono uppercase tracking-wider font-semibold flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                  <Lock className="w-3.5 h-3.5 text-slate-400" />
+                  <span>Mechanical Rigidity</span>
                 </span>
-                <span className={`px-1.5 py-0.5 text-[10px] font-mono font-bold rounded shadow-sm border ${
+                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-mono font-bold rounded shadow-sm border ${
                   isDark
                     ? 'bg-emerald-950 border-emerald-500/70 text-emerald-300'
                     : 'bg-emerald-100 border-emerald-300 text-emerald-800'
                 }`}>
-                  LOCKED ✓
+                  <Check className="w-2.5 h-2.5" /> LOCKED
                 </span>
               </div>
               <p className={`text-[11px] leading-snug mb-2.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
@@ -1563,14 +1590,15 @@ export const Scene3D: React.FC<Scene3DProps> = ({
               <button
                 onClick={onOpenLockManager}
                 title="Open Component Lock & Validation Manager"
-                className={`w-full py-2 px-3 flex items-center justify-center gap-2 text-xs font-bold rounded-lg shadow-md transition-all cursor-pointer active:scale-95 border ${
+                className={`w-full h-8 px-3 flex items-center justify-center gap-2 text-xs font-semibold rounded-md shadow-md transition-all cursor-pointer active:scale-95 border ${
                   isDark
                     ? 'text-cyan-300 bg-cyan-950/90 hover:bg-cyan-900 border-cyan-500/60 hover:border-cyan-400'
                     : 'text-cyan-800 bg-cyan-100/90 hover:bg-cyan-200 border-cyan-300 hover:border-cyan-400'
                 }`}
               >
-                <span>🔒 Open Lock &amp; Validation Manager</span>
-                <span>→</span>
+                <Lock className="w-3.5 h-3.5" />
+                <span>Open Lock &amp; Validation Manager</span>
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
           )}
@@ -1610,7 +1638,7 @@ export const Scene3D: React.FC<Scene3DProps> = ({
             ? 'bg-cyan-950/95 border-cyan-400/80 text-cyan-100 shadow-cyan-950/60'
             : 'bg-cyan-50/95 border-cyan-500 text-cyan-950 shadow-cyan-200/60 font-semibold'
         }`}>
-          <span className="text-base">🖐</span>
+          <Move className="w-3.5 h-3.5 text-cyan-400" />
           <span className={isDark ? 'text-slate-300' : 'text-slate-700'}>Moving:</span>
           <span className={`font-bold font-['Chakra_Petch'] ${isDark ? 'text-white' : 'text-cyan-900'}`}>{draggingCompName}</span>
           <span className={`text-[11px] ${isDark ? 'text-cyan-400/80' : 'text-cyan-700'}`}>· Wires rerouting live</span>
@@ -1634,11 +1662,11 @@ export const Scene3D: React.FC<Scene3DProps> = ({
             </div>
             <button
               onClick={() => onSelectWire(null)}
-              className={`text-xs px-1.5 py-0.5 rounded cursor-pointer ${
+              className={`p-1 rounded cursor-pointer ${
                 isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              ✕
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
           <div className={`space-y-1.5 text-xs font-mono ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>

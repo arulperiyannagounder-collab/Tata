@@ -54,7 +54,7 @@ export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className = '' }) => {
         aria-label={`Toggle theme. Current theme is ${theme} (${activeConfig.name})`}
         className={`h-8 px-2.5 rounded-lg border flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-xs ${
           isDark
-            ? 'bg-slate-900/90 border-slate-700 text-cyan-400 hover:text-white hover:bg-slate-800 hover:border-slate-600'
+            ? 'bg-[#10151c] border-[#1d2631] text-cyan-400 hover:text-white hover:bg-[#141b24] hover:border-cyan-500/50'
             : 'bg-white border-slate-300 text-amber-600 hover:text-amber-800 hover:bg-slate-50'
         }`}
       >
@@ -71,12 +71,12 @@ export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className = '' }) => {
         title="Choose Theme Color Palette Preset"
         className={`h-8 flex items-center gap-1.5 px-2.5 rounded-lg border text-xs font-mono font-medium transition-all cursor-pointer shadow-xs ${
           isDark
-            ? 'bg-slate-900/90 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800'
+            ? 'bg-[#10151c] border-[#1d2631] text-[#E6EDF5] hover:text-white hover:bg-[#141b24]'
             : 'bg-white border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-50'
         } ${isOpen ? 'ring-1 ring-cyan-400' : ''}`}
       >
-        <Palette className="w-3.5 h-3.5 text-cyan-500" />
-        <span className="hidden sm:inline-block max-w-[110px] truncate text-[11px] font-semibold">
+        <Palette className="w-3.5 h-3.5 text-cyan-400" />
+        <span className="hidden sm:inline-block max-w-[125px] truncate text-[11px] font-semibold">
           {activeConfig.name}
         </span>
         {/* Color swatches preview dots */}
@@ -84,7 +84,7 @@ export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className = '' }) => {
           {activeConfig.swatches.map((color, i) => (
             <span
               key={i}
-              className="w-2.5 h-2.5 rounded-full border border-black/30 shadow-xs"
+              className="w-2.5 h-2.5 rounded-full border border-black/40 shadow-xs"
               style={{ backgroundColor: color }}
             />
           ))}
@@ -96,17 +96,19 @@ export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className = '' }) => {
         <div
           className={`absolute right-0 top-full mt-2 w-72 rounded-xl border shadow-2xl p-2.5 z-50 animate-in fade-in slide-in-from-top-2 backdrop-blur-xl ${
             isDark
-              ? 'bg-slate-900/95 border-slate-700 text-slate-100 shadow-black/80'
+              ? 'bg-[#0d1219]/95 border-[#1d2631] text-[#E6EDF5] shadow-black/80'
               : 'bg-white/95 border-slate-200 text-slate-900 shadow-slate-300/80'
           }`}
         >
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-700/60 text-xs font-mono">
+          <div className={`flex items-center justify-between pb-2 mb-2 border-b text-xs font-mono ${
+            isDark ? 'border-[#1d2631]' : 'border-slate-200'
+          }`}>
             <span className="font-bold flex items-center gap-1.5">
               <Palette className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Color Combinations</span>
+              <span>Theme Palettes</span>
             </span>
             <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
-              isDark ? 'bg-blue-950 text-cyan-300 border border-blue-500/40' : 'bg-slate-100 text-slate-700 border border-slate-300'
+              isDark ? 'bg-cyan-950/80 text-cyan-300 border border-cyan-500/40' : 'bg-slate-100 text-slate-700 border border-slate-300'
             }`}>
               {isDark ? '🌙 Dark Mode' : '☀️ Light Mode'}
             </span>
@@ -128,8 +130,8 @@ export const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ className = '' }) => {
                     }}
                     className={`w-full flex items-start gap-2.5 p-2 rounded-lg border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-cyan-950/70 border-cyan-500 text-white shadow-sm'
-                        : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:bg-slate-800 hover:border-slate-700'
+                        ? 'bg-cyan-950/70 border-cyan-400 text-white shadow-sm'
+                        : 'bg-[#10151c] border-[#1d2631] text-[#94A3B8] hover:bg-[#141b24] hover:border-[#273342] hover:text-[#E6EDF5]'
                     }`}
                   >
                     {/* Swatches column */}

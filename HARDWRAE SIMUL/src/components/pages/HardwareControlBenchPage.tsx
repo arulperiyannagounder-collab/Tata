@@ -108,7 +108,7 @@ export const HardwareControlBenchPage: React.FC<HardwareControlBenchPageProps> =
 
   return (
     <div className={`flex-1 flex flex-col h-full overflow-y-auto p-4 md:p-6 select-none transition-colors duration-200 ${
-      isDark ? 'bg-[#0a0e17] text-slate-100' : 'bg-slate-50 text-slate-900'
+      isDark ? 'bg-[#0a0e13] text-[#E6EDF5]' : 'bg-slate-50 text-slate-900'
     }`}>
       {/* Toast Notification Banner */}
       {notification && (
@@ -119,7 +119,7 @@ export const HardwareControlBenchPage: React.FC<HardwareControlBenchPageProps> =
 
       {/* Top Banner & Telemetry Verification Bar */}
       <div className={`p-4 rounded-xl border mb-6 flex flex-wrap items-center justify-between gap-4 ${
-        isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200 shadow-xs'
+        isDark ? 'bg-[#10151c] border-[#1d2631]' : 'bg-white border-slate-200 shadow-xs'
       }`}>
         <div>
           <div className="flex items-center gap-2">

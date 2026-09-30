@@ -2,8 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export type ThemeMode = 'dark' | 'light';
 
-export type LightPaletteId = 'photofocus' | 'mitchell_adam' | 'arctic_breeze';
-export type DarkPaletteId = 'obsidian_depths' | 'midnight_shadows' | 'twilight_hues';
+export type LightPaletteId = 'tata_shield_light' | 'photofocus' | 'mitchell_adam' | 'arctic_breeze';
+export type DarkPaletteId = 'tata_shield' | 'obsidian_depths' | 'midnight_shadows' | 'twilight_hues';
 
 export interface PalettePreset {
   id: string;
@@ -31,6 +31,30 @@ export interface PalettePreset {
 }
 
 export const LIGHT_PALETTES: Record<LightPaletteId, PalettePreset> = {
+  tata_shield_light: {
+    id: 'tata_shield_light',
+    name: 'TATA-SHIELD CAE Studio',
+    subtitle: 'Automotive Precision Lab',
+    description: 'Clean automotive validation laboratory white canvas with cyber cyan (#0284c7) and titanium surfaces.',
+    swatches: ['#f8fafc', '#ffffff', '#0284c7'],
+    bgRoot: '#f8fafc',
+    bgSurface: '#ffffff',
+    bgCard: '#ffffff',
+    bgHeader: '#ffffff',
+    borderSubtle: '#e2e8f0',
+    borderStrong: '#0284c7',
+    textPrimary: '#0f172a',
+    textSecondary: '#334155',
+    textMuted: '#64748b',
+    accentPrimary: '#0284c7',
+    accentSecondary: '#06b6d4',
+    sceneBackground: 0xf8fafc,
+    sceneFog: 0xf8fafc,
+    esdMatBase: 0xe2e8f0,
+    esdMatColor: 0x0284c7,
+    ambientLightColor: 0xffffff,
+    ambientLightIntensity: 1.15,
+  },
   photofocus: {
     id: 'photofocus',
     name: 'Photofocus',
@@ -106,6 +130,30 @@ export const LIGHT_PALETTES: Record<LightPaletteId, PalettePreset> = {
 };
 
 export const DARK_PALETTES: Record<DarkPaletteId, PalettePreset> = {
+  tata_shield: {
+    id: 'tata_shield',
+    name: 'TATA-SHIELD (01 CAE)',
+    subtitle: '01 Design & CAE Validation',
+    description: 'Official TATA-shield automotive engineering theme — graphite obsidian (#0a0e13, #10151c) with tactical cyan (#22d3ee) and aero blue (#38bdf8).',
+    swatches: ['#0a0e13', '#10151c', '#22d3ee'],
+    bgRoot: '#0a0e13',
+    bgSurface: '#0d1219',
+    bgCard: '#10151c',
+    bgHeader: '#0d1219',
+    borderSubtle: '#1d2631',
+    borderStrong: '#22d3ee',
+    textPrimary: '#E6EDF5',
+    textSecondary: '#94A3B8',
+    textMuted: '#64748B',
+    accentPrimary: '#22d3ee',
+    accentSecondary: '#38bdf8',
+    sceneBackground: 0x0a0e13,
+    sceneFog: 0x0a0e13,
+    esdMatBase: 0x10151c,
+    esdMatColor: 0x1d2631,
+    ambientLightColor: 0xe2e8f0,
+    ambientLightIntensity: 0.95,
+  },
   obsidian_depths: {
     id: 'obsidian_depths',
     name: 'Obsidian Depths',
@@ -216,7 +264,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch {
       // Ignore
     }
-    return 'photofocus'; // Default Light: Photofocus (White, Light Gray, Tomato)
+    return 'tata_shield_light'; // Default Light: TATA-SHIELD CAE Studio
   });
 
   const [darkPalette, setDarkPaletteState] = useState<DarkPaletteId>(() => {
@@ -228,7 +276,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch {
       // Ignore
     }
-    return 'obsidian_depths'; // Default Dark: Obsidian Depths (Deep Blues & Teals)
+    return 'tata_shield'; // Default Dark: TATA-SHIELD (01 Design & CAE Validation)
   });
 
   const isDark = theme === 'dark';
@@ -272,6 +320,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     root.style.setProperty('--text-muted', activeConfig.textMuted);
     root.style.setProperty('--accent-primary', activeConfig.accentPrimary);
     root.style.setProperty('--accent-secondary', activeConfig.accentSecondary);
+
+    // TATA-shield standard layout tokens
+    root.style.setProperty('--bg', activeConfig.bgRoot);
+    root.style.setProperty('--bg2', activeConfig.bgSurface);
+    root.style.setProperty('--panel', activeConfig.bgCard);
+    root.style.setProperty('--panel2', isDark ? '#141b24' : '#f1f5f9');
+    root.style.setProperty('--line', activeConfig.borderSubtle);
+    root.style.setProperty('--line2', isDark ? '#273342' : '#cbd5e1');
+    root.style.setProperty('--text-heading', isDark ? '#F8FAFC' : '#0f172a');
+    root.style.setProperty('--text-accent', activeConfig.accentPrimary);
+    root.style.setProperty('--text-success', '#34D399');
+    root.style.setProperty('--text-warning', '#FBBF24');
+    root.style.setProperty('--text-critical', '#F87171');
   }, [theme, lightPalette, darkPalette, activeConfig, isDark]);
 
   const toggleTheme = () => {

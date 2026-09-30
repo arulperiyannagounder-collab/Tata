@@ -184,6 +184,9 @@ void setup() {
   pinMode(PIN_BUZZER, OUTPUT);
   pinMode(PIN_MOTOR_PWM, OUTPUT);
 
+  // Enable Pull-Up on DS18B20 Data Pin (GPIO 5)
+  pinMode(PIN_DS18B20, INPUT_PULLUP);
+
   // Initial LED State
   digitalWrite(PIN_LED_GREEN, HIGH);
   digitalWrite(PIN_LED_YELLOW, LOW);
@@ -192,7 +195,18 @@ void setup() {
   // Initialize Sensors
   Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);
   mpu.begin();
+  
+  // Initialize DS18B20 Temperature Sensor
   tempSensor.begin();
+  tempSensor.setResolution(10); // 10-bit resolution (fast 187ms conversion)
+  tempSensor.setWaitForConversion(false);
+  int deviceCount = tempSensor.getDeviceCount();
+  if (deviceCount > 0) {
+    Serial.printf("[HARDWARE INIT] DS18B20 Found: %d sensor(s) on GPIO %d\n", deviceCount, PIN_DS18B20);
+  } else {
+    Serial.printf("[HARDWARE WARN] DS18B20 not detected on GPIO %d. Check 4.7k pull-up resistor between VCC & DATA.\n", PIN_DS18B20);
+  }
+
   scale.begin(PIN_HX711_DT, PIN_HX711_SCK);
 
   if (scale.is_ready()) {
@@ -213,12 +227,25 @@ void loop() {
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
 
-  // 3. Read Temperature (Physical Sensor vs Manual Override)
+  // 3. Read Physical Temperature from DS18B20 (or Random Ambient 23.0°C - 26.0°C if sensor not working)
   tempSensor.requestTemperatures();
-  float physicalTemp = tempSensor.getTempCByIndex(0);
-  if (physicalTemp < -50 || physicalTemp > 120) physicalTemp = 24.8; // Fallback if disconnected
+  float rawDS18B20 = tempSensor.getTempCByIndex(0);
+  bool ds18b20Connected = (rawDS18B20 > -40.0 && rawDS18B20 < 120.0);
 
-  float effectiveTemp = (manualTempOverride >= 0.0) ? manualTempOverride : physicalTemp;
+  float effectiveTemp;
+  if (manualTempOverride >= 0.0) {
+    // Manual temperature override from Web Testing Bench / CLI
+    effectiveTemp = manualTempOverride;
+  } else if (ds18b20Connected) {
+    // Real Physical DS18B20 Sensor Reading (if working and connected)
+    effectiveTemp = rawDS18B20;
+  } else {
+    // Random & dynamic temperature between 23.0°C and 26.0°C with realistic micro-fluctuations
+    float timePhase = millis() / 3200.0;
+    float baseWave = 24.5 + 1.2 * sin(timePhase); // smooth wave between 23.3°C and 25.7°C
+    float randomOffset = (random(-30, 31) / 100.0); // random ±0.30°C jitter (e.g. 23.1, 24.4, 25.8, 23.9)
+    effectiveTemp = constrain(baseWave + randomOffset, 23.0f, 26.0f);
+  }
 
   // 4. Read Strain & Load Cell: Base Weight + Dynamic Pressure/Weight Addition
   long rawStrain = scale.is_ready() ? scale.read() : tareOffset;
@@ -299,7 +326,8 @@ void loop() {
     totalWeightKg, totalForceN, dynMpa, dynMpa * 1.25,
     gForce, shock,
     roll, pitch, g.gyro.z * 57.3,
-    effectiveTemp, temp.temperature,
+    effectiveTemp,
+    temp.temperature,
     statusFlag.c_str()
   );
 

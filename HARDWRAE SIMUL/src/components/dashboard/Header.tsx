@@ -3,6 +3,22 @@ import { ViewMode, ChassisHealthState, NavigationPage } from '../../types/simula
 import { buzzerAudio } from '../../services/BuzzerAudioEngine';
 import { ThemeSwitch } from '../common/ThemeSwitch';
 import { useTheme } from '../../context/ThemeContext';
+import {
+  Shield,
+  Activity,
+  Sliders,
+  Box,
+  Settings,
+  BarChart3,
+  Maximize2,
+  Minimize2,
+  Volume2,
+  VolumeX,
+  Lock,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 
 interface HeaderProps {
   viewMode: ViewMode;
@@ -48,50 +64,69 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header
       className={`flex items-center justify-between px-6 py-3 border-b shrink-0 select-none transition-colors duration-200 ${
-        isDark ? 'border-slate-800 bg-[#0d121d]' : 'border-slate-200 bg-white shadow-xs'
+        isDark ? 'border-[#1d2631] bg-[#0d1219]' : 'border-slate-200 bg-white shadow-xs'
       }`}
     >
-      {/* Zone 1: Single text element wordmark */}
+      {/* Zone 1: TATA-SHIELD Brand & Stage 01 CAE Identification */}
       <div className="flex items-center gap-3">
         <div
-          className={`flex items-center justify-center w-8 h-8 rounded border font-bold text-sm ${
+          className={`flex items-center justify-center w-8 h-8 rounded-lg border font-bold text-sm ${
             isDark
-              ? 'bg-blue-600/20 border-blue-500/40 text-blue-400'
-              : 'bg-blue-50 border-blue-200 text-blue-600 shadow-xs'
+              ? 'bg-cyan-500/15 border-cyan-500/40 text-cyan-400 shadow-sm shadow-cyan-950/40'
+              : 'bg-cyan-50 border-cyan-200 text-cyan-600 shadow-xs'
           }`}
         >
-          🛡
+          <Shield className="w-4 h-4" />
         </div>
         <div className="flex flex-col">
-          <span
-            className={`text-base font-bold tracking-tight font-['Chakra_Petch'] ${
-              isDark ? 'text-white' : 'text-slate-900'
-            }`}
-          >
-            SHIELD — EV Chassis Structural Health Monitoring
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-base font-bold tracking-tight font-['Chakra_Petch'] ${
+                isDark ? 'text-[#F8FAFC]' : 'text-slate-900'
+              }`}
+            >
+              TATA-SHIELD
+            </span>
+            <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded bg-cyan-400/15 text-cyan-300 border border-cyan-400/35 uppercase">
+              01 DESIGN &amp; CAE VALIDATION
+            </span>
+          </div>
           <div
             className={`flex items-center gap-2 text-xs font-mono ${
-              isDark ? 'text-slate-400' : 'text-slate-500'
+              isDark ? 'text-[#94A3B8]' : 'text-slate-500'
             }`}
           >
-            <span>Interactive 3D Hardware Simulation Bench</span>
+            <span>EV Chassis Structural Health Monitoring</span>
             <span aria-hidden="true">·</span>
             <span
               className={
                 dataSource === 'SIMULATION'
                   ? isDark
-                    ? 'text-amber-400'
+                    ? 'text-amber-400 font-semibold'
                     : 'text-amber-600 font-semibold'
                   : isDark
                   ? 'text-emerald-400 font-semibold'
                   : 'text-emerald-600 font-semibold'
               }
             >
-              {dataSource === 'SIMULATION' ? 'SIMULATED DATA' : 'REAL HARDWARE STREAM'}
+              {dataSource === 'SIMULATION' ? 'CAE BENCH SIM' : 'REAL HARDWARE STREAM'}
             </span>
           </div>
         </div>
+      </div>
+
+      {/* 4-Stage Continuous Lifecycle Ribbon (TATA-shield style) */}
+      <div className="hidden 2xl:flex items-center gap-1.5 px-3 py-1 rounded-lg border border-[#1d2631] bg-black/40 text-[11px] font-mono">
+        <span className="px-2 py-0.5 rounded font-bold bg-cyan-400/20 text-cyan-300 border border-cyan-400/40 flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+          01 DESIGN (CAE)
+        </span>
+        <span className="text-slate-600">→</span>
+        <span className="px-2 py-0.5 text-slate-500">02 BUILD (MFG)</span>
+        <span className="text-slate-600">→</span>
+        <span className="px-2 py-0.5 text-slate-500">03 VALIDATE (TEST)</span>
+        <span className="text-slate-600">→</span>
+        <span className="px-2 py-0.5 text-slate-500">04 MONITOR (LIVE)</span>
       </div>
 
       {/* Zone 2: Navigation links */}
@@ -103,59 +138,59 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Tab 1: Live Hardware Data */}
         <button
           onClick={() => onSelectPage('LIVE_DATA')}
-          className={`h-8 flex items-center gap-1.5 px-3 rounded-lg border font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`h-8 flex items-center gap-2 px-3 rounded-md border font-mono text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
             currentPage === 'LIVE_DATA'
               ? isDark
-                ? 'bg-blue-950/80 border-blue-400 text-blue-300 shadow-sm'
-                : 'bg-blue-50 border-blue-500 text-blue-700 shadow-xs'
+                ? 'bg-cyan-950/80 border-cyan-400 text-cyan-300 shadow-sm shadow-cyan-950/30'
+                : 'bg-cyan-50 border-cyan-500 text-cyan-700 shadow-xs'
               : isDark
-              ? 'bg-slate-900/70 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
+              ? 'bg-[#10151c] border-[#1d2631] text-[#94A3B8] hover:text-white hover:bg-[#141b24]'
               : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-slate-900'
           }`}
         >
-          <span className={`w-2 h-2 rounded-full ${currentPage === 'LIVE_DATA' ? 'bg-cyan-400 animate-pulse' : 'bg-slate-500'}`} />
-          <span>📊 Live Stream</span>
+          <Activity className={`w-3.5 h-3.5 ${currentPage === 'LIVE_DATA' ? 'text-cyan-400' : 'text-slate-400'}`} />
+          <span>Live Stream</span>
         </button>
 
         {/* Tab 2: Hardware Testing & Control */}
         <button
           onClick={() => onSelectPage('HARDWARE_CONTROL')}
-          className={`h-8 flex items-center gap-1.5 px-3 rounded-lg border font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`h-8 flex items-center gap-2 px-3 rounded-md border font-mono text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
             currentPage === 'HARDWARE_CONTROL'
               ? isDark
-                ? 'bg-blue-950/80 border-blue-400 text-blue-300 shadow-sm'
-                : 'bg-blue-50 border-blue-500 text-blue-700 shadow-xs'
+                ? 'bg-cyan-950/80 border-cyan-400 text-cyan-300 shadow-sm shadow-cyan-950/30'
+                : 'bg-cyan-50 border-cyan-500 text-cyan-700 shadow-xs'
               : isDark
-              ? 'bg-slate-900/70 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
+              ? 'bg-[#10151c] border-[#1d2631] text-[#94A3B8] hover:text-white hover:bg-[#141b24]'
               : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-slate-900'
           }`}
         >
-          <span className={`w-2 h-2 rounded-full ${currentPage === 'HARDWARE_CONTROL' ? 'bg-amber-400 animate-pulse' : 'bg-slate-500'}`} />
-          <span>🎛️ Control Bench</span>
+          <Sliders className={`w-3.5 h-3.5 ${currentPage === 'HARDWARE_CONTROL' ? 'text-cyan-400' : 'text-slate-400'}`} />
+          <span>Control Bench</span>
         </button>
 
         {/* Tab 3: 3D Hardware Bench */}
         <button
           onClick={() => onSelectPage('BENCH_3D')}
-          className={`h-8 flex items-center gap-1.5 px-3 rounded-lg border font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
+          className={`h-8 flex items-center gap-2 px-3 rounded-md border font-mono text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
             currentPage === 'BENCH_3D'
               ? isDark
-                ? 'bg-blue-950/80 border-blue-400 text-blue-300 shadow-sm'
-                : 'bg-blue-50 border-blue-500 text-blue-700 shadow-xs'
+                ? 'bg-cyan-950/80 border-cyan-400 text-cyan-300 shadow-sm shadow-cyan-950/30'
+                : 'bg-cyan-50 border-cyan-500 text-cyan-700 shadow-xs'
               : isDark
-              ? 'bg-slate-900/70 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800'
+              ? 'bg-[#10151c] border-[#1d2631] text-[#94A3B8] hover:text-white hover:bg-[#141b24]'
               : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-slate-900'
           }`}
         >
-          <span className={`w-2 h-2 rounded-full ${currentPage === 'BENCH_3D' ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'}`} />
-          <span>🛡️ 3D Bench</span>
+          <Box className={`w-3.5 h-3.5 ${currentPage === 'BENCH_3D' ? 'text-emerald-400' : 'text-slate-400'}`} />
+          <span>3D CAE Bench</span>
         </button>
 
         <div className={`h-4 w-px mx-1 hidden lg:block ${isDark ? 'bg-slate-800' : 'bg-slate-300'}`} />
 
         <button
           onClick={onOpenLoadCellConfig}
-          className={`h-8 px-2.5 rounded-lg border text-xs font-mono transition-colors cursor-pointer hidden xl:inline-flex items-center whitespace-nowrap ${
+          className={`h-8 px-3 rounded-md border text-xs font-mono transition-colors cursor-pointer hidden xl:inline-flex items-center whitespace-nowrap ${
             isDark ? 'border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800' : 'border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -163,7 +198,7 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
         <button
           onClick={onOpenRealHardware}
-          className={`h-8 px-2.5 rounded-lg border text-xs font-mono font-semibold transition-colors cursor-pointer hidden xl:inline-flex items-center whitespace-nowrap ${
+          className={`h-8 px-3 rounded-md border text-xs font-mono font-semibold transition-colors cursor-pointer hidden xl:inline-flex items-center whitespace-nowrap ${
             isDark ? 'border-cyan-500/50 text-cyan-300 bg-cyan-950/40 hover:bg-cyan-900/60 hover:text-white' : 'border-cyan-400 text-cyan-700 bg-cyan-50 hover:bg-cyan-100'
           }`}
         >
@@ -178,7 +213,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleControlSlideBar}
             title={isControlSlideBarOpen ? 'Hide Bench Controls Slide Bar' : 'Open Bench Controls Slide Bar'}
-            className={`h-8 flex items-center gap-1.5 px-2.5 text-xs font-mono font-semibold rounded-lg border transition-all whitespace-nowrap cursor-pointer ${
+            className={`h-8 flex items-center gap-1.5 px-3 text-xs font-mono font-semibold rounded-md border transition-all whitespace-nowrap cursor-pointer shrink-0 ${
               isControlSlideBarOpen
                 ? isDark
                   ? 'bg-slate-800/90 hover:bg-slate-700 border-slate-700 text-slate-300 hover:text-white'
@@ -186,8 +221,9 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'bg-cyan-600 hover:bg-cyan-500 border-cyan-400 text-white shadow-sm'
             }`}
           >
-            <span>⚙️ {isControlSlideBarOpen ? 'Hide Controls' : 'Controls'}</span>
-            <span className="font-bold">{isControlSlideBarOpen ? '◀' : '▶'}</span>
+            <Settings className="w-3.5 h-3.5" />
+            <span>{isControlSlideBarOpen ? 'Hide Controls' : 'Controls'}</span>
+            {isControlSlideBarOpen ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
           </button>
         )}
 
@@ -196,7 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleSidebar}
             title={isSidebarOpen ? 'Slide Telemetry Sidebar Away' : 'Open Telemetry Sidebar'}
-            className={`h-8 flex items-center gap-1.5 px-2.5 text-xs font-mono font-semibold rounded-lg border transition-all whitespace-nowrap cursor-pointer ${
+            className={`h-8 flex items-center gap-1.5 px-3 text-xs font-mono font-semibold rounded-md border transition-all whitespace-nowrap cursor-pointer shrink-0 ${
               isSidebarOpen
                 ? isDark
                   ? 'bg-slate-800/90 hover:bg-slate-700 border-slate-700 text-slate-300 hover:text-white'
@@ -204,8 +240,9 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'bg-blue-600 hover:bg-blue-500 border-blue-400 text-white shadow-sm'
             }`}
           >
-            <span>📊 {isSidebarOpen ? 'Hide Data' : 'Data'}</span>
-            <span className="font-bold">{isSidebarOpen ? '▶' : '◀'}</span>
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>{isSidebarOpen ? 'Hide Data' : 'Data'}</span>
+            {isSidebarOpen ? <ChevronRight className="w-3 h-3" /> : <ChevronLeft className="w-3 h-3" />}
           </button>
         )}
 
@@ -214,7 +251,7 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onToggleFullScreen}
             title={isFullScreen ? 'Exit Full Screen 3D Mode (Windowed)' : 'Enter Full Screen 3D Mode'}
-            className={`h-8 flex items-center gap-1.5 px-2.5 text-xs font-mono font-semibold rounded-lg border transition-all whitespace-nowrap cursor-pointer ${
+            className={`h-8 flex items-center gap-1.5 px-3 text-xs font-mono font-semibold rounded-md border transition-all whitespace-nowrap cursor-pointer shrink-0 ${
               isFullScreen
                 ? 'bg-blue-600 hover:bg-blue-500 border-blue-400 text-white shadow-sm'
                 : isDark
@@ -222,7 +259,8 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-700 hover:text-slate-900'
             }`}
           >
-            <span>{isFullScreen ? '🗗 Windowed' : '⛶ Fullscreen'}</span>
+            {isFullScreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            <span>{isFullScreen ? 'Windowed' : 'Fullscreen'}</span>
           </button>
         )}
 
@@ -230,7 +268,7 @@ export const Header: React.FC<HeaderProps> = ({
         <button
           onClick={handleToggleMute}
           title={isMuted ? 'Unmute Active Buzzer Audio' : 'Mute Active Buzzer Audio'}
-          className={`h-8 px-2.5 text-xs font-mono rounded-lg border transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+          className={`h-8 px-3 text-xs font-mono rounded-md border transition-colors whitespace-nowrap cursor-pointer flex items-center gap-1.5 shrink-0 ${
             isDark
               ? isMuted
                 ? 'bg-slate-900/80 border-slate-700 text-slate-400 hover:text-white'
@@ -240,28 +278,30 @@ export const Header: React.FC<HeaderProps> = ({
               : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
           }`}
         >
-          <span>{isMuted ? '🔇 Muted' : '🔊 Sound'}</span>
+          {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+          <span>{isMuted ? 'Muted' : 'Audio'}</span>
         </button>
 
         {/* Component Lock & Validation Manager Button */}
         <button
           onClick={onOpenValidator}
           title="Open Component Lock & Validation Manager"
-          className={`h-8 flex items-center gap-1.5 px-2.5 text-xs font-semibold rounded-lg border transition-colors whitespace-nowrap shadow-xs cursor-pointer ${
+          className={`h-8 flex items-center gap-2 px-3 text-xs font-semibold rounded-md border transition-colors whitespace-nowrap shadow-xs cursor-pointer shrink-0 ${
             isDark
               ? 'text-cyan-300 bg-cyan-950/80 hover:bg-cyan-900 border-cyan-500/60'
               : 'text-cyan-800 bg-cyan-50 hover:bg-cyan-100 border-cyan-300'
           }`}
         >
-          <span>🔒 Lock</span>
+          <Lock className="w-3.5 h-3.5" />
+          <span>Lock</span>
           <span
-            className={`px-1.5 py-0.5 text-[9px] font-mono rounded font-bold border ${
+            className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-mono rounded font-bold border ${
               isDark
                 ? 'bg-emerald-950 border-emerald-500/70 text-emerald-300'
                 : 'bg-emerald-100 border-emerald-300 text-emerald-800'
             }`}
           >
-            VALIDATED ✓
+            <Check className="w-2.5 h-2.5" /> VALIDATED
           </span>
         </button>
 

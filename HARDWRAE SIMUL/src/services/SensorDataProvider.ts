@@ -67,7 +67,7 @@ export class SimulatedSensorDataProvider implements SensorDataProvider {
     yaw: 0.0,
     vibrationSensorDetected: false,
     vibrationSensorRaw: 0,
-    temperatureC: 24.8,
+    temperatureC: 24.5,
     vibrationMotorActive: false,
     vibrationDutyCycle: 0,
     buzzerActive: false,
@@ -133,7 +133,7 @@ export class SimulatedSensorDataProvider implements SensorDataProvider {
       yaw: 0.0,
       vibrationSensorDetected: false,
       vibrationSensorRaw: 0,
-      temperatureC: 24.8,
+      temperatureC: 24.5,
       vibrationMotorActive: false,
       vibrationDutyCycle: 0,
       buzzerActive: false,
@@ -180,7 +180,10 @@ export class SimulatedSensorDataProvider implements SensorDataProvider {
     let gyroZ = (Math.random() - 0.5) * 0.3;
     let roll = 0;
     let pitch = 0;
-    let tempC = 24.8 + Math.sin(this.tickCount * 0.02) * 0.4;
+    // Ambient temperature naturally oscillating with micro random jitter strictly between 23.0°C and 26.0°C
+    const tempWave = 24.5 + 1.2 * Math.sin(this.tickCount * 0.035);
+    const tempJitter = (Math.random() - 0.5) * 0.6; // ±0.30°C micro-fluctuations
+    let tempC = Math.max(23.0, Math.min(26.0, +(tempWave + tempJitter).toFixed(1)));
     let progress = 0;
 
     let status: ChassisHealthState = 'NORMAL';
@@ -854,48 +857,111 @@ export class RealESP32SensorDataProvider implements SensorDataProvider {
       return this.parseJsonTelemetry(line);
     }
 
-    // 2. Parse formatted hardware line
+    // 2. If it's a CSV telemetry packet (e.g. "0.00,0.000,0.000,0.99,0.1,0.2,24.5,0,0")
+    if (line.includes(',') && !line.includes(':')) {
+      const parts = line.split(',').map((s) => s.trim());
+      if (parts.length >= 7) {
+        const weightKg = parseFloat(parts[0]) || 0;
+        const dynStressMpa = parseFloat(parts[2]) || 0;
+        const gForce = parseFloat(parts[3]) || 1.0;
+        const pitch = parseFloat(parts[4]) || 0;
+        const roll = parseFloat(parts[5]) || 0;
+        let chassisTemp = parseFloat(parts[6]) || 24.5;
+        if (this.hardwareParams.tempOverrideC !== null) {
+          chassisTemp = this.hardwareParams.tempOverrideC;
+        }
+        const vibShockDetected = parts[7] === '1';
+        const stateCode = parseInt(parts[8] || '0', 10);
+        const status: ChassisHealthState = stateCode === 2 ? 'CRITICAL' : stateCode === 1 ? 'WARNING' : 'NORMAL';
+
+        const strainMicroStrain = dynStressMpa > 0 ? Math.round(dynStressMpa * 500) : Math.round(weightKg * 8);
+        const strainDeformationMm = +(strainMicroStrain * 0.0042).toFixed(2);
+        const lc1Raw = Math.floor(842000 + strainMicroStrain * 18.4);
+        const lc2Raw = Math.floor(841800 + strainMicroStrain * 17.9);
+
+        this.isConnected = true;
+        this.telemetry = {
+          timestamp: Date.now(),
+          strainMicroStrain,
+          loadKg: +weightKg.toFixed(2),
+          loadCell1Raw: lc1Raw,
+          loadCell2Raw: lc2Raw,
+          strainDeformationMm,
+          accel: {
+            x: +(Math.sin((roll * Math.PI) / 180)).toFixed(3),
+            y: +(Math.sin((pitch * Math.PI) / 180)).toFixed(3),
+            z: +gForce.toFixed(3),
+          },
+          gyro: { x: 0, y: 0, z: 0 },
+          roll: +roll.toFixed(1),
+          pitch: +pitch.toFixed(1),
+          yaw: 0,
+          vibrationSensorDetected: vibShockDetected,
+          vibrationSensorRaw: vibShockDetected ? 1 : 0,
+          temperatureC: +chassisTemp.toFixed(1),
+          vibrationMotorActive: status === 'CRITICAL' || status === 'WARNING',
+          vibrationDutyCycle: status === 'CRITICAL' ? 255 : status === 'WARNING' ? 140 : 0,
+          buzzerActive: status === 'CRITICAL',
+          buzzerFrequency: status === 'CRITICAL' ? 2800 : 0,
+          ledGreen: status === 'NORMAL',
+          ledYellow: status === 'WARNING',
+          ledRed: status === 'CRITICAL',
+          systemStatus: status,
+          activeScenario: 'NORMAL',
+          scenarioProgress: 1.0,
+          dataSource: 'REAL_HARDWARE',
+        };
+
+        for (const listener of this.listeners) {
+          listener(this.telemetry);
+        }
+        return true;
+      }
+    }
+
+    // 3. Parse formatted hardware line
     try {
-      // Extract Load (supports "[LOAD] 0.00 kg" and "[LOAD] W: 0.00 kg | F: ... N")
-      const loadMatch = line.match(/\[LOAD\]\s*(?:W:\s*)?([-\d.]+)\s*kg(?:\s*\|\s*F:\s*([-\d.]+)\s*N)?/i);
+      // Extract Load (supports "[LOAD] 0.00 kg", "[LOAD] W: 0.00 kg", and "LOAD: 0.00kg")
+      const loadMatch = line.match(/(?:\[LOAD\]\s*(?:W:\s*)?|LOAD:\s*)([-\d.]+)\s*kg(?:\s*\|\s*F:\s*([-\d.]+)\s*N)?/i);
       let loadKg = loadMatch ? parseFloat(loadMatch[1]) : this.telemetry.loadKg;
       if (this.hardwareParams.simulatedAppliedPressureKg > 0) {
         loadKg = +(loadKg + this.hardwareParams.simulatedAppliedPressureKg).toFixed(2);
       }
 
-      // Extract Stress (supports "[DYN STRESS] 0.000 MPa" and "[STRESS] Dyn: 0.000 MPa")
-      const stressMatch = line.match(/\[(?:DYN\s+)?STRESS\]\s*(?:Dyn:\s*)?([-\d.]+)\s*MPa(?:\s*\|\s*Peak:\s*([-\d.]+)\s*MPa)?/i);
+      // Extract Stress (supports "[DYN STRESS] 0.000 MPa", "[STRESS] Dyn: 0.000 MPa", and "STRS: 0.000MPa")
+      const stressMatch = line.match(/(?:\[(?:DYN\s+)?STRESS\]\s*(?:Dyn:\s*)?|STRS:\s*)([-\d.]+)\s*MPa(?:\s*\|\s*Peak:\s*([-\d.]+)\s*MPa)?/i);
       const dynStressMpa = stressMatch ? parseFloat(stressMatch[1]) : 0;
       const peakStressMpa = stressMatch && stressMatch[2] ? parseFloat(stressMatch[2]) : dynStressMpa;
 
-      // Extract G-Force / Shock (supports "[G] 0.98" and "[G-FORCE] 0.97 G (Shock: 9.8 m/s2)")
-      const gforceMatch = line.match(/\[(?:G-FORCE|G)\]\s*([-\d.]+)(?:\s*G)?(?:\s*\(Shock:\s*([-\d.]+)\s*m\/s2\))?/i);
+      // Extract G-Force / Shock (supports "[G] 0.98", "[G-FORCE] 0.97 G", and "G: 0.99")
+      const gforceMatch = line.match(/(?:\[(?:G-FORCE|G)\]|G:)\s*([-\d.]+)(?:\s*G)?(?:\s*\(Shock:\s*([-\d.]+)\s*m\/s2\))?/i);
       const gForce = gforceMatch ? parseFloat(gforceMatch[1]) : 1.0;
 
-      // Extract Warp (supports "[WARP] R: 93.1° P: 9.1°" and "[WARP] ΔR: 44.9° | ΔP: 29.1°")
-      const warpMatch = line.match(/\[WARP\]\s*(?:ΔR|R):\s*([-\d.]+)\s*°?(?:(?:\s*\|\s*|\s+)(?:ΔP|P):\s*([-\d.]+)\s*°?)?/i);
-      const roll = warpMatch ? parseFloat(warpMatch[1]) : this.telemetry.roll;
-      const pitch = warpMatch && warpMatch[2] ? parseFloat(warpMatch[2]) : this.telemetry.pitch;
+      // Extract Warp / Roll & Pitch (supports "[WARP] ΔR: 7.6° | ΔP: 0.1°", "ROLL: 7.6° | PITCH: 0.1°", etc.)
+      const rollMatch = line.match(/(?:(?:\[WARP\]\s*)?(?:ΔR|ROLL|R):\s*)([-\d.]+)/i);
+      const pitchMatch = line.match(/(?:(?:ΔP|PITCH|P):\s*)([-\d.]+)/i);
+      const roll = rollMatch ? parseFloat(rollMatch[1]) : this.telemetry.roll;
+      const pitch = pitchMatch ? parseFloat(pitchMatch[1]) : this.telemetry.pitch;
 
       // Extract Gyro
-      const gyroMatch = line.match(/\[GYRO\]\s*([-\d.]+)\s*°\/s/i);
+      const gyroMatch = line.match(/\[GYRO\]\s*([-\d.]+)\s*°\/s/i) || line.match(/GYRO:\s*([-\d.]+)/i);
       const gyroVal = gyroMatch ? parseFloat(gyroMatch[1]) : 0;
 
-      // Extract Temperature (supports "[TEMP] 24.2 C" and "[TEMP] Chassis: 24.6 C (IMU: 44.9 C)")
-      const tempMatch = line.match(/\[TEMP\]\s*(?:Chassis:\s*)?([-\d.]+)\s*C(?:\s*\(IMU:\s*([-\d.]+)\s*C\))?/i);
-      let chassisTemp = tempMatch ? parseFloat(tempMatch[1]) : this.telemetry.temperatureC;
+      // Extract Temperature (supports "[TEMP] 24.2 C", "[TEMP] Chassis: 24.6 C", "TEMP: 24.5C", "T: 24.5°C")
+      const tempMatch = line.match(/(?:\[TEMP\]\s*(?:Chassis:\s*)?|TEMP:\s*|T:\s*)([-\d.]+)\s*(?:°?C)?(?:\s*\(IMU:\s*([-\d.]+)\s*C\))?/i);
+      let chassisTemp = tempMatch ? parseFloat(tempMatch[1]) : (this.telemetry.temperatureC || 24.5);
       if (this.hardwareParams.tempOverrideC !== null) {
         chassisTemp = this.hardwareParams.tempOverrideC;
       }
 
-      // Extract Alert / Status flag (e.g. "--> FRAME TORSION TWIST!!", "--> PERMANENT YIELD FAILURE!", "--> NORMAL")
-      const alertMatch = line.match(/-->\s*(.+)$/i);
+      // Extract Alert / Status flag (e.g. "--> FRAME TORSION TWIST!!", "[CRITICAL]", "[CAUTION]", "[SAFE]")
+      const alertMatch = line.match(/-->\s*(.+)$/i) || line.match(/\[(CRITICAL|CAUTION|SAFE|NORMAL|ALERT|WARN)\]/i);
       const alertText = alertMatch ? alertMatch[1].trim() : '';
 
-      // Extract Vibration Sensor State (supports "[VIB: IDLE ]", "[VIB: ACTIVE ]", "[VIB: SHOCK ]")
-      const vibMatch = line.match(/\[VIB:\s*([^\]]+)\]/i);
+      // Extract Vibration Sensor State (supports "[VIB: IDLE ]", "[VIB: SHOCK ]", "VIB: HIT", "VIB: IDLE")
+      const vibMatch = line.match(/\[VIB:\s*([^\]]+)\]/i) || line.match(/VIB:\s*([A-Za-z0-9]+)/i);
       const vibText = vibMatch ? vibMatch[1].trim().toUpperCase() : '';
-      const vibShockDetected = vibText.includes('SHOCK') || vibText.includes('ACTIVE') || vibText.includes('1') || vibText.includes('HIGH');
+      const vibShockDetected = vibText.includes('SHOCK') || vibText.includes('HIT') || vibText.includes('ACTIVE') || vibText.includes('1') || vibText.includes('HIGH');
 
       // Compute Microstrain from Stress / Load
       let strainMicroStrain = 0;

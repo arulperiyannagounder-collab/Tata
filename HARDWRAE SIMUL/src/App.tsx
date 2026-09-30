@@ -29,6 +29,23 @@ import { RealHardwareModal } from './components/modals/RealHardwareModal';
 import { LiveHardwareDataPage } from './components/pages/LiveHardwareDataPage';
 import { HardwareControlBenchPage } from './components/pages/HardwareControlBenchPage';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import {
+  Maximize2,
+  Minimize2,
+  ChevronRight,
+  ChevronLeft,
+  Cpu,
+  Bell,
+  Zap,
+  Sparkles,
+  RotateCcw,
+  Lock,
+  Unlock,
+  X,
+  FileText,
+  Check,
+  AlertTriangle,
+} from 'lucide-react';
 
 function AppContent() {
   const { isDark } = useTheme();
@@ -182,7 +199,13 @@ function AppContent() {
     aMinusColor: 'Twisted White (#e2e8f0)',
   });
 
-  // Initialize providers
+  const activeProviderRef = useRef<'SIMULATION' | 'REAL_HARDWARE'>('SIMULATION');
+
+  useEffect(() => {
+    activeProviderRef.current = activeProvider;
+  }, [activeProvider]);
+
+  // Initialize providers once on mount
   useEffect(() => {
     const sim = new SimulatedSensorDataProvider();
     const real = new RealESP32SensorDataProvider();
@@ -190,14 +213,17 @@ function AppContent() {
     realProviderRef.current = real;
 
     const unsubSim = sim.subscribe((data) => {
-      if (activeProvider === 'SIMULATION') {
+      if (activeProviderRef.current === 'SIMULATION') {
         setTelemetry(data);
       }
     });
 
     const unsubReal = real.subscribe((data) => {
       if (real.isConnected) {
-        setActiveProvider('REAL_HARDWARE');
+        if (activeProviderRef.current !== 'REAL_HARDWARE') {
+          activeProviderRef.current = 'REAL_HARDWARE';
+          setActiveProvider('REAL_HARDWARE');
+        }
         setTelemetry(data);
       }
     });
@@ -212,7 +238,7 @@ function AppContent() {
       unsubLogs();
       sim.pause();
     };
-  }, [activeProvider]);
+  }, []);
 
   // Hardware Parameter Handlers (Base Weight, Temperature, Thresholds)
   const handleSetBaseWeight = async (weightKg: number): Promise<boolean> => {
@@ -364,7 +390,7 @@ function AppContent() {
           <div className="space-y-2">
             <div className={`p-2 rounded-lg border text-[11px] font-mono space-y-1.5 ${cardBg}`}>
               <div className="flex justify-between items-center">
-                <span className={`${textMuted} text-[10px]`}>⚡ SHOCK SENSOR:</span>
+                <span className={`${textMuted} text-[10px]`}>SHOCK SENSOR:</span>
                 <span className={`font-bold text-xs ${telemetry.vibrationSensorDetected ? 'text-rose-500 animate-pulse' : 'text-emerald-500'}`}>
                   {telemetry.vibrationSensorDetected ? 'TRIGGERED (SHOCK)' : 'IDLE (NOMINAL)'}
                 </span>
@@ -386,19 +412,19 @@ function AppContent() {
           <div className="space-y-2">
             <div className={`grid grid-cols-2 gap-1.5 p-2 rounded-lg border text-[11px] font-mono ${cardBg}`}>
               <div className={`p-1.5 rounded border ${subCardBg}`}>
-                <span className={`${textMuted} block text-[9px]`}>📐 ROLL (ΔR)</span>
+                <span className={`${textMuted} block text-[9px]`}>ROLL (ΔR)</span>
                 <span className={`${isDark ? 'text-cyan-300' : 'text-cyan-700'} font-bold text-sm tabular-nums`}>{telemetry.roll}°</span>
               </div>
               <div className={`p-1.5 rounded border ${subCardBg}`}>
-                <span className={`${textMuted} block text-[9px]`}>📐 PITCH (ΔP)</span>
+                <span className={`${textMuted} block text-[9px]`}>PITCH (ΔP)</span>
                 <span className={`${isDark ? 'text-cyan-300' : 'text-cyan-700'} font-bold text-sm tabular-nums`}>{telemetry.pitch}°</span>
               </div>
               <div className={`p-1.5 rounded border ${subCardBg}`}>
-                <span className={`${textMuted} block text-[9px]`}>🚀 G-FORCE</span>
+                <span className={`${textMuted} block text-[9px]`}>G-FORCE</span>
                 <span className={`${textHeading} font-bold text-xs tabular-nums`}>{telemetry.accel.z} G</span>
               </div>
               <div className={`p-1.5 rounded border ${subCardBg}`}>
-                <span className={`${textMuted} block text-[9px]`}>🔄 GYRO RATE</span>
+                <span className={`${textMuted} block text-[9px]`}>GYRO RATE</span>
                 <span className={`${textHeading} font-bold text-xs tabular-nums`}>{telemetry.gyro.z} °/s</span>
               </div>
             </div>
@@ -415,21 +441,21 @@ function AppContent() {
           <div className="space-y-2">
             <div className={`grid grid-cols-2 gap-1.5 p-2 rounded-lg border text-[11px] font-mono ${cardBg}`}>
               <div className={`p-1.5 rounded border ${subCardBg}`}>
-                <span className={`${textMuted} block text-[9px]`}>⚖️ LOAD WEIGHT</span>
+                <span className={`${textMuted} block text-[9px]`}>LOAD WEIGHT</span>
                 <span className={`${textHeading} font-bold text-sm tabular-nums`}>{telemetry.loadKg} kg</span>
               </div>
               <div className={`p-1.5 rounded border ${subCardBg}`}>
-                <span className={`${textMuted} block text-[9px]`}>⚡ MICROSTRAIN</span>
+                <span className={`${textMuted} block text-[9px]`}>MICROSTRAIN</span>
                 <span className={`font-bold text-sm tabular-nums ${telemetry.strainMicroStrain > 500 ? 'text-rose-500' : isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>
                   {telemetry.strainMicroStrain} με
                 </span>
               </div>
               <div className={`p-1.5 rounded border ${subCardBg}`}>
-                <span className={`${textMuted} block text-[9px]`}>📏 DEFLECTION</span>
+                <span className={`${textMuted} block text-[9px]`}>DEFLECTION</span>
                 <span className={`${textHeading} font-bold text-xs tabular-nums`}>{telemetry.strainDeformationMm} mm</span>
               </div>
               <div className={`p-1.5 rounded border ${subCardBg}`}>
-                <span className={`${textMuted} block text-[9px]`}>🔢 RAW ADC</span>
+                <span className={`${textMuted} block text-[9px]`}>RAW ADC</span>
                 <span className={`${isDark ? 'text-cyan-400' : 'text-cyan-700'} font-bold text-xs tabular-nums`}>{telemetry.loadCell1Raw.toLocaleString()}</span>
               </div>
             </div>
@@ -441,7 +467,8 @@ function AppContent() {
                 isDark ? 'text-amber-300 bg-amber-950/80 hover:bg-amber-900 border-amber-500/60' : 'text-amber-900 bg-amber-100 hover:bg-amber-200 border-amber-300'
               }`}
             >
-              <span>⚖️ Tare Load Cells (Zero Out Scale)</span>
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Tare Load Cells (Zero Scale)</span>
             </button>
           </div>
         );
@@ -450,7 +477,7 @@ function AppContent() {
         return (
           <div className={`p-2 rounded-lg border text-[11px] font-mono space-y-1 ${cardBg}`}>
             <div className="flex justify-between items-center">
-              <span className={`${textMuted} text-[10px]`}>🌡️ CHASSIS TEMP:</span>
+              <span className={`${textMuted} text-[10px]`}>CHASSIS TEMP:</span>
               <span className={`text-lg font-bold tabular-nums ${isDark ? 'text-cyan-300' : 'text-cyan-700'}`}>{telemetry.temperatureC} °C</span>
             </div>
             <div className={`flex justify-between text-[10px] ${textMuted} pt-1 border-t ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
@@ -497,13 +524,14 @@ function AppContent() {
             </div>
             <button
               onClick={() => handleHardwareControl('CMD:LED_TEST:1')}
-              className={`w-full py-1 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer border ${
+              className={`w-full py-1.5 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer flex items-center justify-center gap-1.5 border ${
                 isDark
                   ? 'text-cyan-300 bg-cyan-950/80 hover:bg-cyan-900 border-cyan-500/50'
                   : 'text-cyan-800 bg-cyan-100 hover:bg-cyan-200 border-cyan-300'
               }`}
             >
-              ✨ Run Hardware LED Sequence Test
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Run LED Sequence Test</span>
             </button>
           </div>
         );
@@ -514,7 +542,7 @@ function AppContent() {
           <div className="space-y-2">
             <div className={`p-2 rounded-lg border text-[11px] font-mono space-y-1 ${cardBg}`}>
               <div className="flex justify-between items-center">
-                <span className={`${textMuted} text-[10px]`}>📳 VIBRATION MOTOR:</span>
+                <span className={`${textMuted} text-[10px]`}>VIBRATION MOTOR:</span>
                 <span className={`font-bold ${telemetry.vibrationMotorActive ? isDark ? 'text-cyan-300 animate-pulse' : 'text-cyan-700 animate-pulse' : textMuted}`}>
                   {telemetry.vibrationMotorActive ? `PWM ${telemetry.vibrationDutyCycle}/255` : 'IDLE (OFF)'}
                 </span>
@@ -530,7 +558,7 @@ function AppContent() {
                   isDark ? 'text-emerald-300 bg-emerald-950/80 hover:bg-emerald-900 border-emerald-500/60' : 'text-emerald-800 bg-emerald-100 hover:bg-emerald-200 border-emerald-300'
                 }`}
               >
-                ⚡ 100% ON
+                100% ON
               </button>
               <button
                 onClick={() => handleHardwareControl('CMD:MOTOR:128')}
@@ -538,7 +566,7 @@ function AppContent() {
                   isDark ? 'text-amber-300 bg-amber-950/80 hover:bg-amber-900 border-amber-500/60' : 'text-amber-800 bg-amber-100 hover:bg-amber-200 border-amber-300'
                 }`}
               >
-                〰 50% PWM
+                50% PWM
               </button>
               <button
                 onClick={() => handleHardwareControl('CMD:MOTOR:0')}
@@ -546,7 +574,7 @@ function AppContent() {
                   isDark ? 'text-rose-300 bg-rose-950/80 hover:bg-rose-900 border-rose-500/60' : 'text-rose-800 bg-rose-100 hover:bg-rose-200 border-rose-300'
                 }`}
               >
-                ⏹ STOP
+                STOP
               </button>
             </div>
           </div>
@@ -557,7 +585,7 @@ function AppContent() {
           <div className="space-y-2">
             <div className={`p-2 rounded-lg border text-[11px] font-mono space-y-1 ${cardBg}`}>
               <div className="flex justify-between items-center">
-                <span className={`${textMuted} text-[10px]`}>🔊 ACOUSTIC BUZZER:</span>
+                <span className={`${textMuted} text-[10px]`}>ACOUSTIC BUZZER:</span>
                 <span className={`font-bold ${telemetry.buzzerActive ? 'text-amber-500 animate-pulse' : textMuted}`}>
                   {telemetry.buzzerActive ? `SOUNDING (${telemetry.buzzerFrequency || 2800} Hz)` : 'SILENT (OFF)'}
                 </span>
@@ -569,21 +597,22 @@ function AppContent() {
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => handleHardwareControl('CMD:BUZZER:1')}
-                className={`py-1.5 px-2 text-xs font-bold rounded-lg border transition-colors cursor-pointer flex items-center justify-center gap-1 ${
+                className={`py-1.5 px-2 text-xs font-bold rounded-lg border transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                   telemetry.buzzerActive
                     ? 'bg-amber-600 text-white border-amber-400'
                     : isDark ? 'bg-amber-950/80 border-amber-500/60 text-amber-300 hover:bg-amber-900' : 'bg-amber-100 border-amber-300 text-amber-800 hover:bg-amber-200'
                 }`}
               >
-                <span>🔔 Beep Buzzer (ON)</span>
+                <Bell className="w-3.5 h-3.5" />
+                <span>Buzzer (ON)</span>
               </button>
               <button
                 onClick={() => handleHardwareControl('CMD:BUZZER:0')}
-                className={`py-1.5 px-2 text-xs font-bold rounded-lg border transition-colors cursor-pointer flex items-center justify-center gap-1 ${
+                className={`py-1.5 px-2 text-xs font-bold rounded-lg border transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                   isDark ? 'text-slate-300 bg-slate-800 hover:bg-slate-700 border-slate-600' : 'text-slate-700 bg-white hover:bg-slate-100 border-slate-300'
                 }`}
               >
-                <span>🔕 Silence (OFF)</span>
+                <span>Silence (OFF)</span>
               </button>
             </div>
           </div>
@@ -620,19 +649,21 @@ function AppContent() {
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => handleHardwareControl('CMD:ALARM_TEST:1')}
-                className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border transition-colors cursor-pointer ${
+                className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                   isDark ? 'text-rose-300 bg-rose-950/80 hover:bg-rose-900 border-rose-500/60' : 'text-rose-800 bg-rose-100 hover:bg-rose-200 border-rose-300'
                 }`}
               >
-                🚨 Hardware Alarm Test
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>Alarm Test</span>
               </button>
               <button
                 onClick={() => handleHardwareControl('CMD:ALARM_TEST:0')}
-                className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border transition-colors cursor-pointer ${
+                className={`py-1.5 px-2 text-[11px] font-bold rounded-lg border transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                   isDark ? 'text-emerald-300 bg-emerald-950/80 hover:bg-emerald-900 border-emerald-500/60' : 'text-emerald-800 bg-emerald-100 hover:bg-emerald-200 border-emerald-300'
                 }`}
               >
-                ✅ Clear Alarm
+                <Check className="w-3.5 h-3.5" />
+                <span>Clear Alarm</span>
               </button>
             </div>
           </div>
@@ -642,7 +673,7 @@ function AppContent() {
 
   return (
     <div className={`flex flex-col w-screen h-screen overflow-hidden select-none font-['Plus_Jakarta_Sans'] transition-colors duration-200 ${
-      isDark ? 'bg-[#0a0e17] text-slate-100' : 'bg-[#f8fafc] text-slate-900'
+      isDark ? 'bg-[#0a0e13] text-[#E6EDF5]' : 'bg-[#f8fafc] text-slate-900'
     }`}>
       {/* Top Header Bar */}
       <Header
@@ -717,97 +748,111 @@ function AppContent() {
           <button
             onClick={handleToggleFullScreen}
             title={isFullScreen ? 'Exit Full Screen 3D Mode' : 'Expand 3D Scene to Full Screen'}
-            className={`absolute top-4 right-44 z-20 px-3 py-1.5 backdrop-blur-md rounded-lg border shadow-xl text-xs font-mono transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`absolute top-4 ${isSidebarOpen ? 'right-48' : 'right-44'} z-20 h-8 px-3 shrink-0 whitespace-nowrap backdrop-blur-md rounded-md border shadow-lg text-xs font-mono transition-colors cursor-pointer flex items-center gap-1.5 ${
               isDark
                 ? 'bg-slate-900/90 border-slate-700/80 text-slate-300 hover:text-white hover:bg-slate-800'
                 : 'bg-white/95 border-slate-300 text-slate-700 hover:text-slate-900 hover:bg-slate-100 shadow-md'
             }`}
           >
-            <span>{isFullScreen ? '🗗 Exit Fullscreen' : '⛶ Fullscreen'}</span>
+            {isFullScreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            <span>{isFullScreen ? 'Exit Fullscreen' : 'Fullscreen'}</span>
           </button>
 
           {/* Toggle Sidebar Floating Button */}
           <button
             onClick={() => setIsSidebarOpen((prev) => !prev)}
             title={isSidebarOpen ? 'Hide Right Telemetry Panel (Full 3D View)' : 'Show Right Telemetry Panel'}
-            className={`absolute top-4 right-4 z-20 px-3 py-1.5 backdrop-blur-md rounded-lg border shadow-xl text-xs font-mono transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`absolute top-4 right-4 z-20 h-8 px-3 shrink-0 whitespace-nowrap backdrop-blur-md rounded-md border shadow-lg text-xs font-mono font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
               isDark
                 ? 'bg-slate-900/90 border-slate-700/80 text-cyan-300 hover:text-white hover:bg-slate-800'
                 : 'bg-white/95 border-slate-300 text-cyan-700 hover:text-cyan-900 hover:bg-slate-100 shadow-md'
             }`}
           >
-            <span>{isSidebarOpen ? '▶ Hide Dashboard' : '◀ Show Dashboard'}</span>
+            {isSidebarOpen ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+            <span>{isSidebarOpen ? 'Hide Dashboard' : 'Show Dashboard'}</span>
           </button>
 
           {/* Floating Hardware Actuator Remote Control Quick-Dock (Bottom-Left) */}
           <div
-            className={`absolute bottom-6 z-20 flex items-center gap-2 p-2 backdrop-blur-md rounded-xl shadow-2xl font-mono text-xs transition-all duration-300 ease-in-out border ${
+            className={`absolute bottom-6 z-20 flex items-center gap-2 p-1.5 backdrop-blur-md rounded-lg shadow-xl font-mono text-xs transition-all duration-300 ease-in-out border ${
               isDark
-                ? 'bg-slate-900/95 border-blue-500/50 text-white'
-                : 'bg-white/95 border-blue-400/80 text-slate-800 shadow-slate-300/60'
+                ? 'bg-slate-900/95 border-slate-800 text-slate-200 shadow-black/60'
+                : 'bg-white/95 border-slate-200 text-slate-800 shadow-slate-300/50'
             } ${
               isControlSlideBarOpen ? 'left-[22.5rem]' : 'left-6'
             }`}
           >
             <div className={`flex items-center gap-1.5 px-2 border-r ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-              <span className={`font-bold text-[11px] ${isDark ? 'text-white' : 'text-slate-900'}`}>🎮 HARDWARE REMOTE:</span>
+              <Cpu className="w-3.5 h-3.5 text-cyan-400" />
+              <span className={`font-semibold text-[11px] uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                Actuator Remote
+              </span>
             </div>
 
             {/* Quick Buzzer Toggle */}
             <button
               onClick={() => handleHardwareControl(telemetry.buzzerActive ? 'CMD:BUZZER:0' : 'CMD:BUZZER:1')}
               title="Toggle Hardware Piezo Buzzer"
-              className={`px-2.5 py-1 rounded border transition-colors cursor-pointer font-semibold ${
+              className={`h-7 px-2.5 rounded-md border text-[11px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 telemetry.buzzerActive
-                  ? 'bg-amber-500 text-slate-950 border-amber-300 font-bold'
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 font-semibold'
                   : isDark
-                  ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+                  ? 'bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-slate-300'
                   : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-700'
               }`}
             >
-              🔔 Buzzer {telemetry.buzzerActive ? 'ON' : 'OFF'}
+              <Bell className="w-3 h-3" />
+              <span>Buzzer</span>
+              <span className={`text-[10px] font-mono px-1 rounded ${telemetry.buzzerActive ? 'bg-amber-400 text-slate-950 font-bold' : 'text-slate-400'}`}>
+                {telemetry.buzzerActive ? 'ON' : 'OFF'}
+              </span>
             </button>
 
             {/* Quick Motor Toggle */}
             <button
               onClick={() => handleHardwareControl(telemetry.vibrationMotorActive ? 'CMD:MOTOR:0' : 'CMD:MOTOR:255')}
               title="Toggle Hardware Vibration Motor"
-              className={`px-2.5 py-1 rounded border transition-colors cursor-pointer font-semibold ${
+              className={`h-7 px-2.5 rounded-md border text-[11px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 telemetry.vibrationMotorActive
-                  ? 'bg-cyan-500 text-slate-950 border-cyan-300 font-bold'
+                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 font-semibold'
                   : isDark
-                  ? 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-slate-300'
+                  ? 'bg-slate-800/80 hover:bg-slate-700/80 border-slate-700 text-slate-300'
                   : 'bg-slate-100 hover:bg-slate-200 border-slate-300 text-slate-700'
               }`}
             >
-              📳 Motor {telemetry.vibrationMotorActive ? 'ON' : 'OFF'}
+              <Zap className="w-3 h-3" />
+              <span>Motor</span>
+              <span className={`text-[10px] font-mono px-1 rounded ${telemetry.vibrationMotorActive ? 'bg-cyan-400 text-slate-950 font-bold' : 'text-slate-400'}`}>
+                {telemetry.vibrationMotorActive ? 'ON' : 'OFF'}
+              </span>
             </button>
 
             {/* Quick LED Test */}
             <button
               onClick={() => handleHardwareControl('CMD:LED_TEST:1')}
               title="Flash test all hardware LEDs"
-              className={`px-2.5 py-1 rounded border font-semibold transition-colors cursor-pointer ${
+              className={`h-7 px-2.5 rounded-md border text-[11px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 isDark
-                  ? 'border-emerald-500/60 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300'
+                  ? 'border-emerald-500/40 bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-300'
                   : 'border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800'
               }`}
             >
-              🚥 Test LEDs
+              <Sparkles className="w-3 h-3" />
+              <span>Test LEDs</span>
             </button>
 
             {/* Quick Tare Load Cells */}
             <button
               onClick={() => handleHardwareControl('CMD:TARE')}
               title="Zero out load cell tare offset"
-              className={`px-2.5 py-1 rounded border font-semibold transition-colors cursor-pointer ${
+              className={`h-7 px-2.5 rounded-md border text-[11px] font-medium transition-colors cursor-pointer flex items-center gap-1.5 ${
                 isDark
-                  ? 'border-purple-500/60 bg-purple-950/80 hover:bg-purple-900 text-purple-300'
-                  : 'border-purple-300 bg-purple-50 hover:bg-purple-100 text-purple-800'
+                  ? 'border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-slate-300'
+                  : 'border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-700'
               }`}
             >
-              ⚖️ Tare
+              <RotateCcw className="w-3 h-3" />
+              <span>Tare</span>
             </button>
           </div>
 
@@ -833,11 +878,11 @@ function AppContent() {
                 </div>
                 <button
                   onClick={() => setSelectedComponent(null)}
-                  className={`text-xs px-1.5 py-0.5 rounded cursor-pointer ${
+                  className={`p-1 rounded cursor-pointer ${
                     isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
-                  ✕
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
 
@@ -859,13 +904,14 @@ function AppContent() {
                 <div className="flex items-center gap-2 pt-1">
                   <button
                     onClick={() => setActiveModal('INSPECTOR')}
-                    className={`flex-1 flex items-center justify-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors cursor-pointer shadow-xs border ${
+                    className={`h-8 flex-1 flex items-center justify-center gap-1.5 px-3 text-xs font-semibold rounded-md transition-colors cursor-pointer shadow-xs border ${
                       isDark
                         ? 'text-cyan-300 bg-cyan-950/80 hover:bg-cyan-900 border-cyan-500/50'
                         : 'text-cyan-800 bg-cyan-50 hover:bg-cyan-100 border-cyan-300'
                     }`}
                   >
-                    <span>📋 Inspect Pinout</span>
+                    <FileText className="w-3.5 h-3.5" />
+                    <span>Inspect Pinout</span>
                   </button>
 
                   <button
@@ -875,7 +921,7 @@ function AppContent() {
                         ? 'Unlock Axis to Drag & Reposition'
                         : 'Lock Axis in Place'
                     }
-                    className={`px-3 py-1.5 text-xs font-mono font-bold rounded-lg border transition-colors cursor-pointer flex items-center gap-1 ${
+                    className={`h-8 px-3 text-xs font-mono font-bold rounded-md border transition-colors cursor-pointer flex items-center gap-1.5 ${
                       lockedComponents[selectedComponent.id]
                         ? isDark
                           ? 'bg-emerald-950/80 border-emerald-500/80 text-emerald-300'
@@ -885,7 +931,17 @@ function AppContent() {
                         : 'bg-amber-100 border-amber-400 text-amber-800'
                     }`}
                   >
-                    <span>{lockedComponents[selectedComponent.id] ? '🔒 LOCKED ✓' : '🔓 UNLOCKED'}</span>
+                    {lockedComponents[selectedComponent.id] ? (
+                      <>
+                        <Lock className="w-3 h-3" />
+                        <span className="flex items-center gap-1"><Check className="w-2.5 h-2.5" /> LOCKED</span>
+                      </>
+                    ) : (
+                      <>
+                        <Unlock className="w-3 h-3" />
+                        <span>UNLOCKED</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -911,7 +967,7 @@ function AppContent() {
                 : 'bg-blue-600 hover:bg-blue-500 border-blue-400 text-white font-bold shadow-blue-500/50 hover:-left-14 animate-pulse -left-12'
             }`}
           >
-            <span className="text-sm font-bold leading-none">{isSidebarOpen ? '▶' : '◀'}</span>
+            {isSidebarOpen ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
             {!isSidebarOpen && (
               <span className="text-[10px] font-bold tracking-wider uppercase font-mono">
                 DATA

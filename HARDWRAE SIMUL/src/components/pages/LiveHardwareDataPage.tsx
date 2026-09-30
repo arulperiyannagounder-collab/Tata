@@ -101,7 +101,7 @@ export const LiveHardwareDataPage: React.FC<LiveHardwareDataPageProps> = ({
 
   return (
     <div className={`flex-1 flex flex-col h-full overflow-y-auto p-4 md:p-6 select-none transition-colors duration-200 ${
-      isDark ? 'bg-[#0a0e17] text-slate-100' : 'bg-slate-50 text-slate-900'
+      isDark ? 'bg-[#0a0e13] text-[#E6EDF5]' : 'bg-slate-50 text-slate-900'
     }`}>
       {/* Top Banner / Hardware Status Header */}
       <div className={`flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl border mb-6 ${
@@ -110,7 +110,7 @@ export const LiveHardwareDataPage: React.FC<LiveHardwareDataPageProps> = ({
           : isWarning
           ? 'bg-amber-950/40 border-amber-500/70 shadow-lg shadow-amber-950/30'
           : isDark
-          ? 'bg-slate-900/80 border-slate-800'
+          ? 'bg-[#10151c] border-[#1d2631]'
           : 'bg-white border-slate-200 shadow-xs'
       }`}>
         <div className="flex items-center gap-3.5">

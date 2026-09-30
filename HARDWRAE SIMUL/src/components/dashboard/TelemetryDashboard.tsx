@@ -1,6 +1,7 @@
 import React from 'react';
 import { SensorTelemetry, HardwareComponentMeta } from '../../types/simulation';
 import { useTheme } from '../../context/ThemeContext';
+import { Zap, Shield } from 'lucide-react';
 
 interface TelemetryDashboardProps {
   telemetry: SensorTelemetry;
@@ -68,22 +69,22 @@ export const TelemetryDashboard: React.FC<TelemetryDashboardProps> = ({
     }
   };
 
-  const cardBg = isDark ? 'bg-slate-900/60 border-slate-800' : 'bg-white border-slate-200 shadow-xs';
-  const innerBoxBg = isDark ? 'bg-slate-950/80 border-slate-800/80' : 'bg-slate-50 border-slate-200';
-  const headingColor = isDark ? 'text-slate-300' : 'text-slate-700';
-  const mutedText = isDark ? 'text-slate-400' : 'text-slate-500';
-  const valColor = isDark ? 'text-white' : 'text-slate-900';
+  const cardBg = isDark ? 'bg-[#10151c] border-[#1d2631]' : 'bg-white border-slate-200 shadow-xs';
+  const innerBoxBg = isDark ? 'bg-[#0a0e13] border-[#1d2631]' : 'bg-slate-50 border-slate-200';
+  const headingColor = isDark ? 'text-[#F8FAFC]' : 'text-slate-700';
+  const mutedText = isDark ? 'text-[#94A3B8]' : 'text-slate-500';
+  const valColor = isDark ? 'text-[#E6EDF5]' : 'text-slate-900';
 
   return (
     <div
       className={`w-96 h-full flex flex-col border-l overflow-y-auto shrink-0 select-none font-['Plus_Jakarta_Sans'] transition-colors duration-200 ${
-        isDark ? 'bg-[#0b0f19] border-slate-800 text-slate-200' : 'bg-slate-100/70 border-slate-200 text-slate-800'
+        isDark ? 'bg-[#0d1219] border-[#1d2631] text-[#E6EDF5]' : 'bg-slate-100/70 border-slate-200 text-slate-800'
       }`}
     >
       {/* Top Telemetry Header */}
       <div
         className={`p-4 border-b ${
-          isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white'
+          isDark ? 'border-[#1d2631] bg-[#10151c]/70' : 'border-slate-200 bg-white'
         }`}
       >
         <div className="flex items-center justify-between mb-2">
@@ -284,7 +285,11 @@ export const TelemetryDashboard: React.FC<TelemetryDashboardProps> = ({
               }`}
             >
               <div className="flex items-center gap-2">
-                <span className="text-base">{telemetry.vibrationSensorDetected ? '⚡' : '🛡'}</span>
+                {telemetry.vibrationSensorDetected ? (
+                  <Zap className="w-4 h-4 text-amber-400 animate-bounce" />
+                ) : (
+                  <Shield className="w-4 h-4 text-emerald-400" />
+                )}
                 <div>
                   <span className="font-bold block text-[11px]">
                     {telemetry.vibrationSensorDetected ? 'SHOCK / VIBRATION DETECTED!' : 'IDLE (NOMINAL)'}
